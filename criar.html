@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Criar meu livro</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--c:#7a1e2c;--bg:#faf5ef}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:Inter,sans-serif;background:var(--bg);color:#2b1d1a;padding:0 16px 120px;max-width:560px;margin:auto}
+header{text-align:center;padding:28px 0 12px}
+header h1{font-family:'Dancing Script';font-size:2.3rem;color:var(--c)}
+header p{font-size:.9rem;opacity:.65}
+.card{background:#fff;border-radius:16px;padding:16px;margin:14px 0;box-shadow:0 2px 12px rgba(80,30,30,.08)}
+.card h3{font-size:.95rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+label.l{display:block;font-size:.78rem;font-weight:600;opacity:.7;margin:10px 0 4px}
+input[type=text],textarea{width:100%;border:1.5px solid #eadfd5;border-radius:10px;padding:11px 12px;font:inherit;font-size:16px;background:#fffdfa}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus{outline:none;border-color:var(--c)}
+.temas{display:flex;gap:10px;flex-wrap:wrap}
+.tema{width:46px;height:46px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px #ddd;cursor:pointer}
+.tema.on{box-shadow:0 0 0 3px var(--c)}
+.ph{display:block;position:relative;aspect-ratio:1;background:#f1e7dc;border-radius:12px;overflow:hidden;cursor:pointer;border:2px dashed #d9c6b3}
+.ph span{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:.85rem;color:#8b6f5a;gap:4px}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph input{display:none}
+.dois{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tag{font-size:.7rem;background:#f6ebe2;color:var(--c);padding:3px 8px;border-radius:20px;font-weight:600}
+.acoes{margin-left:auto;display:flex;gap:4px}
+.acoes button{background:#f4eee9;border:none;width:32px;height:32px;border-radius:8px;font-size:.95rem;cursor:pointer}
+.add{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.add button,.btn{border:none;border-radius:12px;padding:13px 8px;font:inherit;font-weight:600;cursor:pointer;font-size:.9rem}
+.add button{background:#f6ebe2;color:var(--c)}
+.barra{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(250,245,239,.95);backdrop-filter:blur(8px);display:flex;gap:10px;max-width:560px;margin:auto;border-top:1px solid #eee}
+.btn{flex:1}.b1{background:#fff;color:var(--c);border:2px solid var(--c)}.b2{background:var(--c);color:#fff}
+#prev{position:fixed;inset:0;z-index:50;display:none;background:#000}
+#prev iframe{width:100%;height:100%;border:0}
+#prev button{position:absolute;top:12px;right:12px;z-index:2;background:#fff;border:none;border-radius:20px;padding:8px 14px;font-weight:600}
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px}
+#modal .card{width:100%;max-width:420px;text-align:center}
+#modal h2{font-family:'Dancing Script';color:var(--c);font-size:2rem;margin-bottom:6px}
+#link{word-break:break-all;background:#f6ebe2;padding:10px;border-radius:10px;font-size:.85rem;margin:12px 0}
+#modal .btn{width:100%;margin-top:8px}
+.zap{background:#25d366;color:#fff}
+.dica{font-size:.75rem;opacity:.6;margin-top:6px}
+</style>
+</head>
+<body>
+<header><h1>Criar meu livro</h1><p>Preencha, veja a prévia e mande para o seu amor ❤️</p></header>
+
+<div class="card"><h3>💌 Informações</h3>
+ <label class="l">Para quem é?</label><input type="text" data-k="para" placeholder="Ex: Ana">
+ <label class="l">De quem?</label><input type="text" data-k="de" placeholder="Seu nome">
+ <label class="l">Título da capa</label><input type="text" data-k="titulo" placeholder="Nossa História">
+ <label class="l">Subtítulo</label><input type="text" data-k="subtitulo">
+ <label class="l">Dedicatória (1ª página)</label><textarea data-k="dedicatoria"></textarea>
+ <label class="l">Mensagem final</label><textarea data-k="final"></textarea>
+ <label class="l">Música (link de um .mp3, opcional)</label><input type="text" data-k="musica" placeholder="https://...mp3">
+</div>
+
+<div class="card"><h3>🎨 Cor da capa</h3><div class="temas" id="temas"></div></div>
+
+<div id="paginas"></div>
+
+<div class="card"><h3>➕ Adicionar página</h3>
+ <div class="add"><button data-add="foto">📷 Foto</button><button data-add="fotos2">🖼️ 2 Fotos</button><button data-add="texto">✍️ Texto</button></div>
+</div>
+
+<div class="barra"><button class="btn b1" id="bPrev">👀 Prévia</button><button class="btn b2" id="bPub">💝 Publicar</button></div>
+<div id="prev"><button id="fechar">✕ Fechar</button></div>
+<div id="modal"><div class="card"><h2>Livro pronto!</h2><p>Agora é só mandar esse link pra ela:</p><div id="link"></div>
+ <button class="btn zap" id="bZap">Enviar no WhatsApp</button><button class="btn b1" id="bShare">Compartilhar / Copiar link</button>
+ <button class="btn" id="bOk" style="background:none">Fechar</button></div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
+<script>
+const TEMAS=[["#7a1e2c","#4e0f1a","#e8c77a"],["#1c2c5b","#0d1630","#e8c77a"],["#1f4d3a","#0f2a1f","#e8c77a"],["#c25b7a","#7c2f49","#fff1d6"],["#222","#0a0a0a","#e8c77a"],["#6b4a2b","#3d2814","#f3dfb3"]];
+let S;try{S=JSON.parse(localStorage.getItem("rascunho"))}catch(e){}
+S=S||{para:"",de:"",titulo:"Nossa História",subtitulo:"um livro só nosso",dedicatoria:"Para a pessoa que transformou\nos meus dias comuns\nnos mais especiais.",final:"Eu te amo.\nE essa história\nestá só começando...",musica:"",cores:{capa:TEMAS[0][0],capa2:TEMAS[0][1],ouro:TEMAS[0][2]},
+ paginas:[{tipo:"texto",titulo:"Como tudo começou",texto:""},{tipo:"foto",img:"",legenda:"",data:""},{tipo:"foto",img:"",legenda:""}]};
+function salvar(){try{localStorage.setItem("rascunho",JSON.stringify(S))}catch(e){alert("Memória do navegador cheia: use menos fotos.")}}
+document.querySelectorAll("[data-k]").forEach(i=>{i.value=S[i.dataset.k]||"";i.oninput=()=>{S[i.dataset.k]=i.value;salvar()}});
+temas.innerHTML=TEMAS.map((t,i)=>`<div class="tema" data-t="${i}" style="background:linear-gradient(135deg,${t[0]},${t[1]})"></div>`).join("");
+function marcaTema(){document.querySelectorAll(".tema").forEach(e=>e.classList.toggle("on",TEMAS[e.dataset.t][0]===S.cores.capa))}
+temas.onclick=e=>{const t=TEMAS[e.target.dataset.t];if(!t)return;S.cores={capa:t[0],capa2:t[1],ouro:t[2]};marcaTema();salvar()};marcaTema();
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const ph=(src,i,j)=>`<label class="ph">${src?`<img src="${src}">`:'<span><b style="font-size:1.6rem">📷</b>Toque para escolher</span>'}<input type="file" accept="image/*" data-i="${i}" data-j="${j}"></label>`;
+const inp=(i,k,v,ph,j)=>`<input type="text" data-i="${i}" data-f="${k}" ${j!=null?`data-j="${j}"`:""} value="${esc(v)}" placeholder="${ph}">`;
+function render(){
+ paginas.innerHTML=S.paginas.map((p,i)=>{
+  let b="";
+  if(p.tipo==="texto")b=`<label class="l">Título</label>${inp(i,"titulo",p.titulo,"Ex: O que eu amo em você")}<label class="l">Texto</label><textarea data-i="${i}" data-f="texto">${esc(p.texto)}</textarea>`;
+  if(p.tipo==="foto")b=`${ph(p.img,i,"")}<label class="l">Legenda</label>${inp(i,"legenda",p.legenda,"Ex: nosso primeiro encontro")}<label class="l">Data (opcional)</label>${inp(i,"data",p.data,"12 · 06 · 2023")}`;
+  if(p.tipo==="fotos2")b=`<div class="dois">${[0,1].map(j=>`<div>${ph(p.imgs[j],i,j)}${inp(i,"legendas",p.legendas[j],"legenda",j)}</div>`).join("")}</div>`;
+  return `<div class="card"><h3>Página ${i+1} <span class="tag">${{texto:"Texto",foto:"Foto",fotos2:"2 Fotos"}[p.tipo]}</span>
+   <span class="acoes"><button data-m="-1" data-i="${i}">↑</button><button data-m="1" data-i="${i}">↓</button><button data-del="${i}">🗑</button></span></h3>${b}</div>`}).join("");
+}
+paginas.oninput=e=>{const t=e.target,p=S.paginas[t.dataset.i];if(!t.dataset.f)return;
+ if(t.dataset.j!=null&&t.dataset.j!=="")p[t.dataset.f][t.dataset.j]=t.value;else p[t.dataset.f]=t.value;salvar()};
+paginas.onclick=e=>{const b=e.target.closest("button");if(!b)return;const i=+b.dataset.i;
+ if(b.dataset.del!=null){if(confirm("Apagar esta página?")){S.paginas.splice(+b.dataset.del,1)}}
+ else{const j=i+ +b.dataset.m;if(j<0||j>=S.paginas.length)return;[S.paginas[i],S.paginas[j]]=[S.paginas[j],S.paginas[i]]}
+ salvar();render()};
+paginas.onchange=async e=>{const t=e.target;if(t.type!=="file"||!t.files[0])return;
+ const d=await comprime(t.files[0]),p=S.paginas[t.dataset.i];
+ if(p.tipo==="fotos2")p.imgs[t.dataset.j]=d;else p.img=d;salvar();render()};
+function comprime(f){return new Promise(r=>{const img=new Image();img.onload=()=>{const M=1100,k=Math.min(1,M/Math.max(img.width,img.height));
+ const c=document.createElement("canvas");c.width=img.width*k;c.height=img.height*k;c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+ URL.revokeObjectURL(img.src);r(c.toDataURL("image/jpeg",.75))};img.src=URL.createObjectURL(f)})}
+document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{const t=b.dataset.add;
+ S.paginas.push(t==="texto"?{tipo:t,titulo:"",texto:""}:t==="foto"?{tipo:t,img:"",legenda:"",data:""}:{tipo:t,imgs:["",""],legendas:["",""]});
+ salvar();render();scrollTo(0,document.body.scrollHeight)});
+bPrev.onclick=()=>{salvar();prev.style.display="block";prev.insertAdjacentHTML("beforeend",'<iframe src="index.html?preview=1"></iframe>')};
+fechar.onclick=()=>{prev.style.display="none";prev.querySelector("iframe").remove()};
+bPub.onclick=async()=>{
+ if(!S.para||!S.de)return alert("Preencha para quem é e de quem é o livro.");
+ if(!window.FIREBASE_CONFIG||!FIREBASE_CONFIG.projectId)return alert("Configure o Firebase no arquivo config.js (veja o README).");
+ bPub.disabled=true;bPub.textContent="Publicando...";
+ try{
+  const db=(firebase.apps[0]||firebase.initializeApp(FIREBASE_CONFIG)).firestore();
+  const id=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4),ref=db.collection("livros").doc(id);
+  const fotos=[],dados=JSON.parse(JSON.stringify(S),(k,v)=>typeof v==="string"&&v.startsWith("data:image")?"#"+(fotos.push(v)-1):v);
+  await Promise.all(fotos.map((d,n)=>ref.collection("fotos").doc(""+n).set({d})));
+  await ref.set({dados,criado:Date.now()});
+  const url=location.href.replace(/criar\.html.*$/,"")+"?id="+id;
+  link.textContent=url;modal.style.display="flex";
+  bZap.onclick=()=>open("https://wa.me/?text="+encodeURIComponent("Fiz uma coisa especial pra você ❤️ "+url));
+  bShare.onclick=()=>navigator.share?navigator.share({title:S.titulo,url}).catch(()=>{}):navigator.clipboard.writeText(url).then(()=>alert("Link copiado!"));
+ }catch(e){console.error(e);alert("Erro ao publicar: "+e.message)}
+ bPub.disabled=false;bPub.textContent="💝 Publicar"};
+bOk.onclick=()=>modal.style.display="none";
+render();
+</script>
+</body>
+</html>

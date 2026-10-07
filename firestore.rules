@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /livros/{id} {
+      allow read: if true;
+      allow create: if request.resource.size() < 1000000;
+      match /fotos/{n} { allow read: if true; allow create: if true; }
+    }
+  }
+}

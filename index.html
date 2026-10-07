@@ -74,9 +74,12 @@ h2{font-family:'Playfair Display',serif;font-weight:500;font-size:calc(var(--W)*
 <div class="nav"><button id="ant">‹</button><button id="prox">›</button></div>
 <div class="dica" id="dica">toque no livro para virar a página</div>
 <audio id="musica" loop></audio>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="config.js"></script>
 <script>
 /* ======================= PERSONALIZE AQUI ======================= */
-const LIVRO = {
+const PADRAO = {
   para: "Meu Amor",
   de: "Diogo",
   titulo: "Nossa História",
@@ -97,6 +100,25 @@ const LIVRO = {
   final: "Eu te amo.\nE essa história\nestá só começando...",
 };
 /* ================================================================= */
+const qs=new URLSearchParams(location.search);
+async function carregar(){
+  let L=PADRAO;
+  try{
+    if(qs.has("preview")){L=JSON.parse(localStorage.getItem("rascunho"))||PADRAO}
+    else if(qs.get("id")){
+      introT.textContent="carregando...";abrir.style.visibility="hidden";
+      const db=firebase.initializeApp(FIREBASE_CONFIG).firestore(),ref=db.collection("livros").doc(qs.get("id"));
+      const [d,fs]=await Promise.all([ref.get(),ref.collection("fotos").get()]);
+      if(!d.exists){introT.textContent="livro não encontrado";return}
+      const fotos={};fs.forEach(x=>fotos[x.id]=x.data().d);
+      L=JSON.parse(JSON.stringify(d.data().dados),(k,v)=>typeof v==="string"&&v[0]==="#"&&fotos[v.slice(1)]?fotos[v.slice(1)]:v);
+      abrir.style.visibility="";
+    }
+  }catch(e){introT.textContent="erro ao carregar";console.error(e);return}
+  montar(L);
+}
+function montar(LIVRO){
+LIVRO.cores=LIVRO.cores||PADRAO.cores;
 const r=document.documentElement.style;r.setProperty('--capa',LIVRO.cores.capa);r.setProperty('--capa2',LIVRO.cores.capa2);r.setProperty('--ouro',LIVRO.cores.ouro);
 document.title=LIVRO.titulo;introT.textContent="Para "+LIVRO.para;
 const foto=(src,leg)=>`<div class="foto"><div class="fita"></div><div class="img">📷 sua foto<img src="${src}" onerror="this.remove()"></div><span>${leg||''}</span></div>`;
@@ -150,9 +172,11 @@ setInterval(coracao,900);
 abrir.onclick=()=>{intro.style.opacity=0;setTimeout(()=>intro.remove(),1200);chuva(25);
   if(LIVRO.musica){musica.src=LIVRO.musica;musica.play().catch(()=>{})}};
 // mobile: escala o livro para caber na tela
-function ajusta(){const p=document.querySelector(".palco"),w=livro.offsetWidth,h=livro.offsetHeight;
-  const s=Math.min(innerWidth*.94/(w*2),innerHeight*.7/h,1.15);p.style.transform=`scale(${s})`;}
+function ajusta(){r.setProperty('--W',Math.min(innerWidth*.47,innerHeight*.68/1.4,420)+'px')}
 addEventListener("resize",ajusta);ajusta();
+if(qs.has("preview"))abrir.click();
+}
+carregar();
 </script>
 </body>
 </html>

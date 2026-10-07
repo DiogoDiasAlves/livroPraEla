@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Nosso Livro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;700&family=Playfair+Display:ital,wght@0,500;0,700;1,400&family=Lora:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{--capa:#7a1e2c;--capa2:#4e0f1a;--ouro:#e8c77a;--papel:#fbf6ec;--tinta:#3b2a24;--W:min(42vw,380px);--H:calc(var(--W)*1.4)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:radial-gradient(ellipse at 50% 40%,#3a1620 0%,#1a080d 60%,#0d0407 100%);font-family:Lora,serif;color:var(--tinta);display:flex;align-items:center;justify-content:center;user-select:none;padding-bottom:14vh}
+#ceu{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.cor{position:absolute;bottom:-40px;color:#ff6b8a;opacity:.0;animation:sobe linear forwards;filter:drop-shadow(0 0 6px #ff3d6e)}
+@keyframes sobe{0%{transform:translateY(0) rotate(0);opacity:0}10%{opacity:.8}100%{transform:translateY(-110vh) rotate(40deg);opacity:0}}
+.palco{perspective:2400px;position:relative}
+.livro{position:relative;width:var(--W);height:var(--H);transform-style:preserve-3d;transition:transform 1s cubic-bezier(.6,.05,.3,1);transform:translateX(0) rotateX(8deg)}
+.livro.aberto{transform:translateX(calc(var(--W)/2)) rotateX(8deg)}
+.livro.fim{transform:translateX(var(--W)) rotateX(8deg)}
+.sombra{position:absolute;left:-5%;right:-5%;bottom:-30px;height:40px;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%);filter:blur(6px);transform:translateZ(-20px)}
+/* miolo (bloco de páginas fixo) */
+.bloco{position:absolute;inset:4px 6px 4px 0;background:repeating-linear-gradient(90deg,#efe6d4 0 1px,#fbf6ec 1px 3px);border-radius:0 4px 4px 0;transform:translateZ(-1px);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.folha{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.1s cubic-bezier(.45,.05,.25,1);cursor:pointer}
+.folha.virada{transform:rotateY(-180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border-radius:0 6px 6px 0}
+.verso{transform:rotateY(180deg);border-radius:6px 0 0 6px}
+.folha .face::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.1s}
+.folha.virando .face::after{opacity:1}
+.frente::after{background:linear-gradient(90deg,rgba(0,0,0,.25),transparent 40%)}
+.verso::after{background:linear-gradient(270deg,rgba(0,0,0,.25),transparent 40%)}
+/* papel */
+.pag{background:var(--papel);background-image:radial-gradient(circle at 20% 10%,rgba(255,255,255,.6),transparent 40%),radial-gradient(circle at 80% 90%,rgba(180,150,100,.12),transparent 50%),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .4 0 0 0 0 .3 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");padding:9% 10%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.frente.pag{box-shadow:inset 18px 0 25px -15px rgba(0,0,0,.35)}
+.verso.pag{box-shadow:inset -18px 0 25px -15px rgba(0,0,0,.35)}
+.num{position:absolute;bottom:4%;font-size:.7rem;opacity:.5;font-style:italic}
+.frente .num{right:8%}.verso .num{left:8%}
+.orn{color:var(--capa);opacity:.6;font-size:1.1rem;letter-spacing:.5em;margin:.6em 0}
+h2{font-family:'Playfair Display',serif;font-weight:500;font-size:calc(var(--W)*.075);color:var(--capa2);line-height:1.15}
+.script{font-family:'Dancing Script',cursive}
+.txt{font-size:calc(var(--W)*.042);line-height:1.65;margin-top:.8em;white-space:pre-line}
+.foto{width:100%;flex:1;max-height:72%;background:#fff;padding:5% 5% 14%;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:rotate(-2deg);position:relative;display:flex;flex-direction:column}
+.foto:nth-child(even){transform:rotate(2deg)}
+.foto .img{flex:1;background:#d8c9b5 center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#8b7560;font-size:.8rem}
+.foto .img{position:relative}.foto img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.foto span{position:absolute;bottom:3%;left:0;right:0;font-family:'Dancing Script';font-size:calc(var(--W)*.05);color:#444}
+.fita{position:absolute;top:-10px;left:50%;width:34%;height:22px;margin-left:-17%;background:rgba(232,199,122,.55);transform:rotate(-3deg)}
+.data{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;opacity:.6;margin-top:.8em}
+/* capa */
+.capa{background:linear-gradient(135deg,var(--capa),var(--capa2));color:var(--ouro);padding:12%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-shadow:inset 6px 0 10px rgba(0,0,0,.4),inset -2px 0 4px rgba(255,255,255,.1)}
+.capa::before{content:"";position:absolute;inset:6%;border:2px solid var(--ouro);border-radius:4px;opacity:.7;box-shadow:inset 0 0 0 5px transparent,inset 0 0 0 6px rgba(232,199,122,.4)}
+.capa .lomb{position:absolute;left:0;top:0;bottom:0;width:7%;background:linear-gradient(90deg,rgba(0,0,0,.45),rgba(255,255,255,.08) 60%,rgba(0,0,0,.2))}
+.capa .couro{position:absolute;inset:0;opacity:.18;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E")}
+.capa h1{font-family:'Dancing Script';font-size:calc(var(--W)*.14);line-height:1;text-shadow:0 2px 0 rgba(0,0,0,.4),0 0 18px rgba(232,199,122,.35);position:relative}
+.capa .sub{font-family:'Playfair Display';font-style:italic;font-size:calc(var(--W)*.045);margin-top:1em;position:relative;opacity:.9}
+.capa .cora{font-size:calc(var(--W)*.12);margin:.4em 0;position:relative;animation:bate 1.4s infinite}
+@keyframes bate{0%,100%{transform:scale(1)}15%{transform:scale(1.15)}30%{transform:scale(1)}45%{transform:scale(1.1)}}
+.capa.interna{background:linear-gradient(135deg,#efe3cf,#e2d2b8);color:var(--capa2)}
+.capa.interna::before{border-color:var(--capa);opacity:.25}
+.dica{position:fixed;bottom:4vh;left:0;right:0;text-align:center;color:#f3d9b0;font-family:'Playfair Display';font-style:italic;font-size:.9rem;opacity:.75;animation:pis 2s infinite}
+@keyframes pis{50%{opacity:.3}}
+.nav{position:fixed;bottom:9vh;display:flex;gap:16px;left:50%;transform:translateX(-50%);z-index:9}
+.nav button{background:rgba(255,255,255,.1);border:1px solid rgba(232,199,122,.5);color:var(--ouro);width:44px;height:44px;border-radius:50%;font-size:1.2rem;cursor:pointer;backdrop-filter:blur(4px)}
+#intro{position:fixed;inset:0;z-index:20;background:#12050a;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--ouro);transition:opacity 1.2s;text-align:center;padding:20px}
+#intro h3{font-family:'Dancing Script';font-size:2.4rem;margin-bottom:.4em}
+#intro p{font-family:'Playfair Display';font-style:italic;opacity:.8;margin-bottom:2em}
+#intro button{background:none;border:none;font-size:4rem;cursor:pointer;animation:bate 1.4s infinite;filter:drop-shadow(0 0 20px #ff3d6e)}
+</style>
+</head>
+<body>
+<div id="ceu"></div>
+<div id="intro"><h3 id="introT"></h3><p>toque no coração para abrir</p><button id="abrir">❤️</button></div>
+<div class="palco"><div class="livro" id="livro"><div class="sombra"></div><div class="bloco"></div></div></div>
+<div class="nav"><button id="ant">‹</button><button id="prox">›</button></div>
+<div class="dica" id="dica">toque no livro para virar a página</div>
+<audio id="musica" loop></audio>
+<script>
+/* ======================= PERSONALIZE AQUI ======================= */
+const LIVRO = {
+  para: "Meu Amor",
+  de: "Diogo",
+  titulo: "Nossa História",
+  subtitulo: "um livro só nosso",
+  musica: "",               // ex: "musica.mp3" (coloque o arquivo na pasta)
+  cores: { capa: "#7a1e2c", capa2: "#4e0f1a", ouro: "#e8c77a" },
+  dedicatoria: "Para a pessoa que transformou\nos meus dias comuns\nnos mais especiais.",
+  paginas: [
+    { tipo: "texto", titulo: "Como tudo começou", texto: "Escreva aqui como vocês se conheceram.\nCada detalhe daquele dia\nficou guardado em mim." },
+    { tipo: "foto", img: "fotos/1.jpg", legenda: "nosso primeiro encontro", data: "12 · 06 · 2023" },
+    { tipo: "foto", img: "fotos/2.jpg", legenda: "aquele dia perfeito" },
+    { tipo: "texto", titulo: "O que eu amo em você", texto: "Seu sorriso.\nSeu jeito de me olhar.\nA forma como tudo fica leve\nquando você está perto." },
+    { tipo: "fotos2", imgs: ["fotos/3.jpg","fotos/4.jpg"], legendas: ["nós","sempre"] },
+    { tipo: "texto", titulo: "Nossas memórias", texto: "Cada viagem, cada risada,\ncada abraço apertado...\nTudo vale a pena com você." },
+    { tipo: "foto", img: "fotos/5.jpg", legenda: "pra sempre" },
+    { tipo: "texto", titulo: "Promessas", texto: "Prometo te escolher\ntodos os dias,\nem todas as versões\nda nossa história." },
+  ],
+  final: "Eu te amo.\nE essa história\nestá só começando...",
+};
+/* ================================================================= */
+const r=document.documentElement.style;r.setProperty('--capa',LIVRO.cores.capa);r.setProperty('--capa2',LIVRO.cores.capa2);r.setProperty('--ouro',LIVRO.cores.ouro);
+document.title=LIVRO.titulo;introT.textContent="Para "+LIVRO.para;
+const foto=(src,leg)=>`<div class="foto"><div class="fita"></div><div class="img">📷 sua foto<img src="${src}" onerror="this.remove()"></div><span>${leg||''}</span></div>`;
+function conteudo(p,n){
+  let h="";
+  if(p.tipo==="texto")h=`<div class="orn">❦</div><h2>${p.titulo||""}</h2><div class="orn">· ♥ ·</div><p class="txt">${p.texto||""}</p>`;
+  else if(p.tipo==="foto")h=foto(p.img,p.legenda)+(p.data?`<div class="data">${p.data}</div>`:"");
+  else if(p.tipo==="fotos2")h=`<div style="display:flex;flex-direction:column;gap:8%;width:82%;height:100%">${p.imgs.map((s,i)=>foto(s,p.legendas&&p.legendas[i])).join("")}</div>`;
+  return `<div class="pag-in">${h}</div><div class="num">${n}</div>`;
+}
+// faces: capa, dedicatória, páginas..., final, contracapa
+const faces=[
+  {cls:"capa",html:`<div class="couro"></div><div class="lomb"></div><div class="sub">para ${LIVRO.para}</div><div class="cora">♥</div><h1>${LIVRO.titulo}</h1><div class="sub">${LIVRO.subtitulo}</div>`},
+  {cls:"capa interna",html:`<div class="orn">❦</div><h2 class="script" style="font-size:calc(var(--W)*.1)">Para ${LIVRO.para}</h2><p class="txt">${LIVRO.dedicatoria}</p><div class="orn">♥</div><p class="script" style="font-size:calc(var(--W)*.06)">com amor, ${LIVRO.de}</p>`},
+  ...LIVRO.paginas.map((p,i)=>({cls:"pag",html:conteudo(p,i+1)})),
+  {cls:"pag",html:`<div class="orn">❦ ❦ ❦</div><p class="txt script" style="font-size:calc(var(--W)*.075);line-height:1.4">${LIVRO.final}</p><div class="orn" style="font-size:2rem;opacity:1;color:#c0233f">♥</div><p class="script" style="font-size:calc(var(--W)*.06)">${LIVRO.de}</p>`},
+];
+if(faces.length%2===0)faces.push({cls:"pag",html:`<div class="orn" style="font-size:2rem">♥</div>`});
+faces.push({cls:"capa",html:`<div class="couro"></div><div class="cora" style="font-size:calc(var(--W)*.08)">♥</div><div class="sub">${LIVRO.de} & ${LIVRO.para}</div>`});
+const livro=document.getElementById("livro"),folhas=[];
+for(let i=0;i<faces.length;i+=2){
+  const f=document.createElement("div");f.className="folha";
+  const a=faces[i],b=faces[i+1];
+  f.innerHTML=`<div class="face frente ${a.cls}">${a.html}</div><div class="face verso ${b.cls}">${b.html}</div>`;
+  if(b.cls==="capa")f.lastChild.querySelector(".lomb")||f.lastChild.insertAdjacentHTML("afterbegin",'<div class="lomb" style="left:auto;right:0;transform:scaleX(-1)"></div>');
+  livro.appendChild(f);folhas.push(f);
+}
+document.querySelectorAll(".pag-in").forEach(e=>{e.style.cssText="display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%"});
+let atual=0;const N=folhas.length;
+function render(){
+  folhas.forEach((f,i)=>{const v=i<atual;f.classList.toggle("virada",v);f.style.zIndex=v?i:N-i});
+  livro.classList.toggle("aberto",atual>0&&atual<N);livro.classList.toggle("fim",atual===N);
+  if(atual===N)livro.classList.remove("aberto");
+}
+function ir(d){const n=atual+d;if(n<0||n>N)return;const f=folhas[d>0?atual:n];f.classList.add("virando");f.style.zIndex=N+5;
+  setTimeout(()=>f.classList.remove("virando"),1100);atual=n;
+  folhas.forEach((g,i)=>{if(g!==f)g.style.zIndex=i<atual?i:N-i});f.classList.toggle("virada",d>0);
+  setTimeout(render,1100);livro.classList.toggle("aberto",atual>0&&atual<N);livro.classList.toggle("fim",atual===N);
+  document.getElementById("dica").style.display="none";if(atual===N)chuva(40);}
+folhas.forEach((f,i)=>f.addEventListener("click",()=>ir(i<atual?-1:1)));
+prox.onclick=()=>ir(1);ant.onclick=()=>ir(-1);
+addEventListener("keydown",e=>{if(e.key==="ArrowRight")ir(1);if(e.key==="ArrowLeft")ir(-1)});
+let x0=null;addEventListener("touchstart",e=>x0=e.touches[0].clientX,{passive:true});
+addEventListener("touchend",e=>{if(x0===null)return;const dx=e.changedTouches[0].clientX-x0;if(Math.abs(dx)>50)ir(dx<0?1:-1);x0=null});
+render();
+function coracao(){const c=document.createElement("div");c.className="cor";c.textContent=["♥","❤","♡"][Math.random()*3|0];
+  c.style.left=Math.random()*100+"vw";c.style.fontSize=10+Math.random()*22+"px";c.style.animationDuration=6+Math.random()*8+"s";
+  ceu.appendChild(c);setTimeout(()=>c.remove(),15000);}
+function chuva(n){for(let i=0;i<n;i++)setTimeout(coracao,i*80)}
+setInterval(coracao,900);
+abrir.onclick=()=>{intro.style.opacity=0;setTimeout(()=>intro.remove(),1200);chuva(25);
+  if(LIVRO.musica){musica.src=LIVRO.musica;musica.play().catch(()=>{})}};
+// mobile: escala o livro para caber na tela
+function ajusta(){const p=document.querySelector(".palco"),w=livro.offsetWidth,h=livro.offsetHeight;
+  const s=Math.min(innerWidth*.94/(w*2),innerHeight*.7/h,1.15);p.style.transform=`scale(${s})`;}
+addEventListener("resize",ajusta);ajusta();
+</script>
+</body>
+</html>

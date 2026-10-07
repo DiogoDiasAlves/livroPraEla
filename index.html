@@ -165,7 +165,12 @@ function coracao(){const c=document.createElement("div");c.className="cor";c.tex
 function chuva(n){for(let i=0;i<n;i++)setTimeout(coracao,i*80)}
 setInterval(coracao,900);
 abrir.onclick=()=>{intro.style.opacity=0;setTimeout(()=>intro.remove(),1200);chuva(25);
-  if(LIVRO.musica){musica.src=LIVRO.musica;musica.play().catch(()=>{})}};
+  if(yt)yt.playVideo();else if(LIVRO.musica){musica.src=LIVRO.musica;musica.play().catch(()=>{})}};
+// música do YouTube: player escondido, toca no clique do coração
+const ytId=((LIVRO.musica||"").match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/)||[])[1];let yt=null;
+if(ytId){const d=document.createElement("div");d.id="ytp";d.style.cssText="position:fixed;width:1px;height:1px;left:-10px;top:-10px;opacity:0;pointer-events:none";document.body.appendChild(d);
+  window.onYouTubeIframeAPIReady=()=>{yt=new YT.Player("ytp",{videoId:ytId,playerVars:{autoplay:0,loop:1,playlist:ytId,playsinline:1,controls:0},events:{onReady:()=>{}}})};
+  const t=document.createElement("script");t.src="https://www.youtube.com/iframe_api";document.head.appendChild(t);}
 // mobile: escala o livro para caber na tela
 function ajusta(){r.setProperty('--W',Math.min(innerWidth*.47,innerHeight*.68/1.4,420)+'px')}
 addEventListener("resize",ajusta);ajusta();

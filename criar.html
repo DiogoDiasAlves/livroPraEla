@@ -73,9 +73,6 @@ input:focus,textarea:focus{outline:none;border-color:var(--c)}
  <button class="btn zap" id="bZap">Enviar no WhatsApp</button><button class="btn b1" id="bShare">Compartilhar / Copiar link</button>
  <button class="btn" id="bOk" style="background:none">Fechar</button></div></div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="config.js"></script>
 <script>
 const TEMAS=[["#7a1e2c","#4e0f1a","#e8c77a"],["#1c2c5b","#0d1630","#e8c77a"],["#1f4d3a","#0f2a1f","#e8c77a"],["#c25b7a","#7c2f49","#fff1d6"],["#222","#0a0a0a","#e8c77a"],["#6b4a2b","#3d2814","#f3dfb3"]];
 let S;try{S=JSON.parse(localStorage.getItem("rascunho"))}catch(e){}
@@ -117,15 +114,11 @@ bPrev.onclick=()=>{salvar();prev.style.display="block";prev.insertAdjacentHTML("
 fechar.onclick=()=>{prev.style.display="none";prev.querySelector("iframe").remove()};
 bPub.onclick=async()=>{
  if(!S.para||!S.de)return alert("Preencha para quem é e de quem é o livro.");
- if(!window.FIREBASE_CONFIG||!FIREBASE_CONFIG.projectId)return alert("Configure o Firebase no arquivo config.js (veja o README).");
  bPub.disabled=true;bPub.textContent="Publicando...";
  try{
-  const db=(firebase.apps[0]||firebase.initializeApp(FIREBASE_CONFIG)).firestore();
-  const id=Math.random().toString(36).slice(2,8)+Date.now().toString(36).slice(-4),ref=db.collection("livros").doc(id);
-  const fotos=[],dados=JSON.parse(JSON.stringify(S),(k,v)=>typeof v==="string"&&v.startsWith("data:image")?"#"+(fotos.push(v)-1):v);
-  await Promise.all(fotos.map((d,n)=>ref.collection("fotos").doc(""+n).set({d})));
-  await ref.set({dados,criado:Date.now()});
-  const url=location.href.replace(/criar\.html.*$/,"")+"?id="+id;
+  const res=await fetch("/api/livro",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(S)});
+  const j=await res.json();if(!res.ok)throw new Error(j.erro||res.status);
+  const url=location.origin+"/?id="+j.id;
   link.textContent=url;modal.style.display="flex";
   bZap.onclick=()=>open("https://wa.me/?text="+encodeURIComponent("Fiz uma coisa especial pra você ❤️ "+url));
   bShare.onclick=()=>navigator.share?navigator.share({title:S.titulo,url}).catch(()=>{}):navigator.clipboard.writeText(url).then(()=>alert("Link copiado!"));

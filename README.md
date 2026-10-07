@@ -5,16 +5,18 @@
 
 O rascunho fica salvo no navegador, então dá para fechar e continuar depois. As fotos são comprimidas automaticamente.
 
-## Configuração (uma vez só, ~5 min)
+## Colocar no ar de graça (Cloudflare Pages + KV), uma vez só
 
-### 1. Firebase (guarda o livro e as fotos, grátis)
-1. Acesse https://console.firebase.google.com → **Adicionar projeto** (pode desativar o Analytics).
-2. No menu **Build → Firestore Database → Criar banco de dados** (modo produção, região `southamerica-east1`).
-3. Na aba **Regras**, cole o conteúdo de `firestore.rules` e publique.
-4. Em ⚙️ **Configurações do projeto → Seus apps → Web (`</>`)**, registre um app e copie o objeto `firebaseConfig` para o arquivo `config.js`.
+1. Crie uma conta em https://dash.cloudflare.com.
+2. **Storage & Databases → KV → Create namespace** com o nome `livros`.
+3. **Workers & Pages → Create → Pages → Connect to Git** e escolha o repositório `livroPraEla` (e o branch).
+   - Framework: *None* · Build command: (vazio) · Output directory: `/`
+   - Save and Deploy.
+4. No projeto criado: **Settings → Bindings → Add → KV namespace**
+   - Variable name: `LIVROS` · Namespace: `livros` → Save.
+5. **Deployments → ⋯ → Retry deployment** (para aplicar o binding).
 
-### 2. Colocar no ar (GitHub Pages)
-No repositório: **Settings → Pages → Branch** (escolha o branch e `/root`) → Save.
-Depois disso, o editor fica em `https://SEU-USUARIO.github.io/livroPraEla/criar.html`.
+Pronto. O editor fica em `https://SEU-PROJETO.pages.dev/criar.html`.
+No celular: abra o editor, monte o livro, toque em **Publicar** e mande o link para ela.
 
-Pelo celular: abra o link do editor, crie o livro, toque em Publicar e envie para ela.
+O plano grátis do KV aceita 1.000 livros publicados por dia e 1 GB de espaço, o que dá muito livro.

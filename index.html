@@ -74,9 +74,6 @@ h2{font-family:'Playfair Display',serif;font-weight:500;font-size:calc(var(--W)*
 <div class="nav"><button id="ant">‹</button><button id="prox">›</button></div>
 <div class="dica" id="dica">toque no livro para virar a página</div>
 <audio id="musica" loop></audio>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="config.js"></script>
 <script>
 /* ======================= PERSONALIZE AQUI ======================= */
 const PADRAO = {
@@ -107,11 +104,9 @@ async function carregar(){
     if(qs.has("preview")){L=JSON.parse(localStorage.getItem("rascunho"))||PADRAO}
     else if(qs.get("id")){
       introT.textContent="carregando...";abrir.style.visibility="hidden";
-      const db=firebase.initializeApp(FIREBASE_CONFIG).firestore(),ref=db.collection("livros").doc(qs.get("id"));
-      const [d,fs]=await Promise.all([ref.get(),ref.collection("fotos").get()]);
-      if(!d.exists){introT.textContent="livro não encontrado";return}
-      const fotos={};fs.forEach(x=>fotos[x.id]=x.data().d);
-      L=JSON.parse(JSON.stringify(d.data().dados),(k,v)=>typeof v==="string"&&v[0]==="#"&&fotos[v.slice(1)]?fotos[v.slice(1)]:v);
+      const res=await fetch("/api/livro/"+encodeURIComponent(qs.get("id")));
+      if(!res.ok){introT.textContent="livro não encontrado";return}
+      L=await res.json();
       abrir.style.visibility="";
     }
   }catch(e){introT.textContent="erro ao carregar";console.error(e);return}
